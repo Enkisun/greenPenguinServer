@@ -1,0 +1,5 @@
+{
+  "port": 5000,
+  "mongoUri": "mongodb+srv://alexander:Ryuk1997@mern.mpinj.mongodb.net/mern?retryWrites=true&w=majority",
+  "jwtSecret": "RyukToken"
+}
