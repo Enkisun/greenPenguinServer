@@ -5,7 +5,8 @@ const schema = new Schema({
   volume: { type: Number, required: true },
   price: { type: Number, required: true },
   category: { type: String, required: true },
-  trademark: { type: String, required: true }
-})
+  trademark: { type: String, required: true },
+  image: { data: Buffer, contentType: String }
+});
 
 module.exports = model('Product', schema)

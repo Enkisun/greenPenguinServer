@@ -1,48 +1,33 @@
 const {Router} = require('express')
 const Product = require('../models/Product')
+const multer = require('multer');
+const fs = require('fs');
 
 const router = Router()
 
-router.get('/', paginatedResult(Product), async (req, res) => {
-  // await Product.find({}, (error, result) => {
-  //   if (error) {
-  //     return res.status(500).json({ message: `${error.message}` })
-  //   }
-
-    // let products = []
-
-    // result.map(product => {
-    //   let { _id, name, volume, price, category, trademark } = product
-    //   product = { id: _id, name, volume, price, category, trademark }
-    //   products = [ ...products, product ]
-    // })
-
-  return res.json(res.paginatedResult)
+const storage = multer.diskStorage({
+  destination: './uploads/',
+  filename: function (req, file, cb) {
+    if (!file.originalname.match(/\.(png|jpeg|jpg|wav|tif|gif)$/)) {
+      var err = new Error();
+      err.code = 'filetype';
+      return cb(err);
+    } else {
+      cb(null, Date.now() + "_" + file.originalname);
+    }
+  }
 })
 
-function paginatedResult(model) {
+const upload = multer({ storage })
+
+const paginatedResult = model => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page)
     const limit = parseInt(req.query.limit)
-  
-    const startIndex = (page - 1) * limit
-    const endIndex = page * limit
 
     const results = {}
-
-    if (endIndex < await model.countDocuments().exec()) {
-      results.next = {
-        page: page + 1,
-        limit: limit
-      }
-    }
-
-    if (startIndex > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit
-      }
-    }
+  
+    const startIndex = (page - 1) * limit
 
     results.totalProductsCount = {
       totalProductsCount: await model.countDocuments()
@@ -52,14 +37,24 @@ function paginatedResult(model) {
       results.products = await model.find().limit(limit).skip(startIndex).exec()
       res.paginatedResult = results
       next()
-    } catch (e) { res.status(500).json({ message: e.message }) }
+    } catch (e) {
+      res.status(500).json({ message: e.message })
+    }
   }
-}  
+}
 
-router.post('/', async (req, res) => {
-  const { name, volume, price, category, trademark } = req.body;
+router.get('/', paginatedResult(Product), async (req, res) => {
+  return res.json(res.paginatedResult)
+})
 
-  Product.create({ name, volume, price, category, trademark }, (error, response) => {
+router.post('/', upload.single('image'), async (req, res) => {
+  const { name, volume, price, category, trademark } = req.body
+  
+  const newProduct = new Product({ name, volume, price, category, trademark });
+  newProduct.image.data = fs.readFileSync(req.file.path)
+  newProduct.image.contentType = req.file.mimetype;
+
+  newProduct.save((error, response) => {
     if (error) {
       return res.status(500).json({ message: `${error.message}` })
     }

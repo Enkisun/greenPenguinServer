@@ -1,1 +1,1 @@
-GET http://localhost:5000/api/products?page=2&limit=1
+GET http://localhost:5000/api/categories/
