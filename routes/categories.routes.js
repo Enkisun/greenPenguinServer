@@ -14,17 +14,22 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const category = new Category({
-    name: req.body.name,
-    imageSrc: req.file ? req.file.path : ''
-  })
+  let { category, subCategory } = req.body
+  // let options = { upset: true, new: true }
 
-  try {
-    await category.save()
-    res.status(201).json(category)
-  } catch (e) {
-    res.status(400).json({ message: e.message })
-  }
+  Category.findOneAndUpdate({category}, { $push: {subCategory} }, async (error, categories) => {
+    if (error) {
+      res.status(400).json({ message: error.message })
+    }
+
+    if (!categories) {
+      await Category.create({category, subCategory}, response => {
+        res.json({ response })
+      })
+    } else {
+      res.json({ categories })
+    }
+  }) 
 })
 
 module.exports = router

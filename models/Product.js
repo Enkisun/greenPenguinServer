@@ -5,6 +5,7 @@ const schema = new Schema({
   volume: { type: Number, required: true },
   price: { type: Number, required: true },
   category: { type: String, required: true },
+  subCategory: { type: String },
   trademark: { type: String, required: true },
   image: { data: Buffer, contentType: String }
 });

@@ -48,11 +48,14 @@ router.get('/', paginatedResult(Product), async (req, res) => {
 })
 
 router.post('/', upload.single('image'), async (req, res) => {
-  const { name, volume, price, category, trademark } = req.body
-  
-  const newProduct = new Product({ name, volume, price, category, trademark });
-  newProduct.image.data = fs.readFileSync(req.file.path)
-  newProduct.image.contentType = req.file.mimetype;
+  const { name, volume, price, category, subCategory, trademark } = req.body
+
+  const newProduct = new Product({ name, volume, price, category, subCategory, trademark });
+
+  if (req.file) {
+    newProduct.image.data = fs.readFileSync(req.file.path)
+    newProduct.image.contentType = req.file.mimetype;
+  }
 
   newProduct.save((error, response) => {
     if (error) {

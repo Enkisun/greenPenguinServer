@@ -7,6 +7,7 @@ const app = express()
 const PORT = config.get('port') || 5000
 
 app.use(express.json({ extended: true }))
+mongoose.set('useFindAndModify', false);
 
 app.use('/api/auth', require('./routes/auth.routes'))
 app.use('/api/products', require('./routes/products.routes'))
