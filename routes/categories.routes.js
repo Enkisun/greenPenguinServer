@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
   let { category, subCategory } = req.body
   // let options = { upset: true, new: true }
 
-  Category.findOneAndUpdate({category}, { $push: {subCategory} }, async (error, categories) => {
+  Category.findOneAndUpdate({category}, {$addToSet: {subCategory}}, async (error, categories) => {
     if (error) {
       res.status(400).json({ message: error.message })
     }

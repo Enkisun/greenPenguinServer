@@ -24,17 +24,29 @@ const paginatedResult = model => {
   return async (req, res, next) => {
     const page = parseInt(req.query.page)
     const limit = parseInt(req.query.limit)
+    const category = req.query.category
+    const subCategory = req.query.subCategory
 
-    const results = {}
-  
     const startIndex = (page - 1) * limit
 
-    results.totalProductsCount = {
-      totalProductsCount: await model.countDocuments()
-    }
+    const query = {}
+
+    const results = {}
+
+    if (category) {
+      query.category = category
+    } else results.totalProductsCount = { totalProductsCount: await model.countDocuments() }
+
+    if (subCategory) query.subCategory = subCategory
 
     try {
-      results.products = await model.find().limit(limit).skip(startIndex).exec()
+      results.products = await model.find(query).limit(limit).skip(startIndex).exec()
+      
+      let totalProductsCount = Object.keys(results.products).length
+      if (!results.totalProductsCount) {
+        results.totalProductsCount = { totalProductsCount }
+      }
+
       res.paginatedResult = results
       next()
     } catch (e) {
