@@ -26,26 +26,28 @@ const paginatedResult = model => {
     const limit = parseInt(req.query.limit)
     const category = req.query.category
     const subCategory = req.query.subCategory
+    const trademark = req.query.trademark
 
+    const trademarkArray = trademark.split(',')
     const startIndex = (page - 1) * limit
 
     const query = {}
-
     const results = {}
 
     if (category) {
       query.category = category
-    } else results.totalProductsCount = { totalProductsCount: await model.countDocuments() }
+    } else {
+      results.totalProductsCount = { totalProductsCount: await model.countDocuments() }
+    }
 
     if (subCategory) query.subCategory = subCategory
+    if (trademark) query.trademark = { $in: trademarkArray }
 
     try {
       results.products = await model.find(query).limit(limit).skip(startIndex).exec()
-      
+
       let totalProductsCount = Object.keys(results.products).length
-      if (!results.totalProductsCount) {
-        results.totalProductsCount = { totalProductsCount }
-      }
+      if (!results.totalProductsCount) results.totalProductsCount = { totalProductsCount }
 
       res.paginatedResult = results
       next()
