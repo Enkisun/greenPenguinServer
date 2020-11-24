@@ -34,11 +34,8 @@ const paginatedResult = model => {
     const query = {}
     const results = {}
 
-    if (category) {
-      query.category = category
-    } else {
-      results.totalProductsCount = { totalProductsCount: await model.countDocuments() }
-    }
+    if (category) { query.category = category }
+    else { results.totalProductsCount = {totalProductsCount: await model.countDocuments()} }
 
     if (subCategory) query.subCategory = subCategory
     if (trademark) query.trademark = { $in: trademarkArray }
@@ -62,9 +59,9 @@ router.get('/', paginatedResult(Product), async (req, res) => {
 })
 
 router.post('/', upload.single('image'), async (req, res) => {
-  const { name, volume, price, category, subCategory, trademark } = req.body
+  const { category, subCategory, trademark, name, volume, price, description } = req.body
 
-  const newProduct = new Product({ name, volume, price, category, subCategory, trademark });
+  const newProduct = new Product({ category, subCategory, trademark, name, volume, price, description });
 
   if (req.file) {
     newProduct.image.data = fs.readFileSync(req.file.path)
