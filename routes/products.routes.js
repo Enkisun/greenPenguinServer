@@ -77,6 +77,18 @@ router.post('/', upload.single('image'), async (req, res) => {
   }) 
 })
 
+router.put('/', upload.single('image'), async (req, res) => {
+  const { category, subCategory, trademark, name, volume, price, description, id } = req.body;
+
+  Product.findOneAndUpdate({ _id: id }, { $set: { category, subCategory, trademark, name, volume, price, description }}, error => {
+    if (error) {
+      return res.status(400).json({ message: `${error.message}` })
+    } 
+
+    res.status(201).json({ message: `editing completed successfully` })
+  }) 
+})
+
 router.delete('/', async (req, res) => {
   const { id } = req.body;
 
@@ -87,18 +99,6 @@ router.delete('/', async (req, res) => {
 
     res.status(202).json({ message: `deletion completed successfully` })
   })
-})
-
-router.put('/', async (req, res) => {
-  const { name, id } = req.body;
-
-  Category.updateOne({ _id: id }, { $addFields: { name }}, error => {
-    if (error) {
-      return res.status(400).json({ message: `${error.message}` })
-    } 
-
-    res.status(204).json({ message: `editing completed successfully` })
-  }) 
 })
 
 module.exports = router
