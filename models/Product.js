@@ -8,7 +8,7 @@ const schema = new Schema({
   volume: { type: Number, required: true },
   price: { type: Number, required: true },
   description: { type: String },
-  image: { data: Buffer, contentType: String },
+  image: { data: Buffer, name: String, contentType: String },
 });
 
 module.exports = model('Product', schema)

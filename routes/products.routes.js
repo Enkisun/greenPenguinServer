@@ -65,6 +65,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 
   if (req.file) {
     newProduct.image.data = fs.readFileSync(req.file.path)
+    newProduct.image.name = req.file.originalname;
     newProduct.image.contentType = req.file.mimetype;
   }
 
@@ -79,8 +80,15 @@ router.post('/', upload.single('image'), async (req, res) => {
 
 router.put('/', upload.single('image'), async (req, res) => {
   const { category, subCategory, trademark, name, volume, price, description, id } = req.body;
+  let image = req.file;
 
-  Product.findOneAndUpdate({ _id: id }, { $set: { category, subCategory, trademark, name, volume, price, description }}, error => {
+  if (image) {
+    image.data = fs.readFileSync(req.file.path)
+    image.name = req.file.originalname;
+    image.contentType = req.file.mimetype;
+  }
+
+  Product.findOneAndUpdate({ _id: id }, { $set: { category, subCategory, trademark, name, volume, price, description, image }}, error => {
     if (error) {
       return res.status(400).json({ message: `${error.message}` })
     } 
