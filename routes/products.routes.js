@@ -61,7 +61,9 @@ router.get('/', paginatedResult(Product), async (req, res) => {
 router.post('/', upload.single('image'), async (req, res) => {
   const { category, subCategory, trademark, name, volume, price, description } = req.body
 
-  const newProduct = new Product({ category, subCategory, trademark, name, volume, price, description });
+  const newProduct = new Product({ category, trademark, name, volume, price, description });
+
+  if (subCategory) { newProduct.subCategory = subCategory }
 
   if (req.file) {
     newProduct.image.data = fs.readFileSync(req.file.path)
@@ -82,13 +84,18 @@ router.put('/', upload.single('image'), async (req, res) => {
   const { category, subCategory, trademark, name, volume, price, description, id } = req.body;
   let image = req.file;
 
+  let update = { category, trademark, name, volume, price, description }
+
+  if (subCategory) { update.subCategory = subCategory }
+
   if (image) {
     image.data = fs.readFileSync(req.file.path)
     image.name = req.file.originalname;
     image.contentType = req.file.mimetype;
+    update.image = image;
   }
 
-  Product.findOneAndUpdate({ _id: id }, { $set: { category, subCategory, trademark, name, volume, price, description, image }}, error => {
+  Product.findOneAndUpdate({ _id: id }, { $set: update }, error => {
     if (error) {
       return res.status(400).json({ message: `${error.message}` })
     } 

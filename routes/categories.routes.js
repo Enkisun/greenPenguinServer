@@ -15,9 +15,11 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   let { category, subCategory } = req.body
-  // let options = { upset: true, new: true }
+  let update = {}
 
-  Category.findOneAndUpdate({category}, {$addToSet: {subCategory}}, async (error, categories) => {
+  if (subCategory) { update = { subCategory } }
+
+  Category.findOneAndUpdate({category}, {$addToSet: update}, async (error, categories) => {
     if (error) {
       res.status(400).json({ message: error.message })
     }
