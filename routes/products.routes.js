@@ -22,30 +22,32 @@ const upload = multer({ storage })
 
 const paginatedResult = model => {
   return async (req, res, next) => {
-    const page = parseInt(req.query.page)
+    let page = parseInt(req.query.page)
     const limit = parseInt(req.query.limit)
     const category = req.query.category
     const subCategory = req.query.subCategory
     const trademark = req.query.trademark
 
-    const trademarkArray = trademark.split(',')
-    const startIndex = (page - 1) * limit
-
     const query = {}
     const results = {}
 
-    if (category) { query.category = category }
-    else { results.totalProductsCount = {totalProductsCount: await model.countDocuments()} }
+    if (category || trademark) {
+      if (category) { query.category = category }
+      if (subCategory) query.subCategory = subCategory
 
-    if (subCategory) query.subCategory = subCategory
-    if (trademark) query.trademark = { $in: trademarkArray }
+      const trademarkArray = trademark.split(',')
+      if (trademark) query.trademark = { $in: trademarkArray }
+
+      results.products = await model.find(query).exec()
+      let totalProductsCount = Object.keys(results.products).length
+      results.totalProductsCount = { totalProductsCount }
+    } 
+
+    let startIndex = (page - 1) * limit
+    if (!results.totalProductsCount) { results.totalProductsCount = {totalProductsCount: await model.countDocuments()} }
 
     try {
       results.products = await model.find(query).limit(limit).skip(startIndex).exec()
-
-      let totalProductsCount = Object.keys(results.products).length
-      if (!results.totalProductsCount) results.totalProductsCount = { totalProductsCount }
-
       res.paginatedResult = results
       next()
     } catch (e) {
