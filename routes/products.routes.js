@@ -22,11 +22,13 @@ const upload = multer({ storage })
 
 const paginatedResult = model => {
   return async (req, res, next) => {
-    let page = parseInt(req.query.page)
-    const limit = parseInt(req.query.limit)
-    const category = req.query.category
-    const subCategory = req.query.subCategory
-    const trademark = req.query.trademark
+    let { page, limit, category, subCategory, trademark, sortBy, sortingOrder, search } = req.query
+    page = parseInt(page)
+    limit = parseInt(limit)
+
+    if (sortBy === 'По цене') sortBy = { price: sortingOrder === 'asc' ? 1 : -1 }
+    if (sortBy === 'По алфавиту') sortBy = { name: sortingOrder === 'asc' ? 'asc' : 'desc' }
+    if (!sortBy) sortBy = ''
 
     const query = {}
     const results = {}
@@ -41,13 +43,15 @@ const paginatedResult = model => {
       results.products = await model.find(query).exec()
       let totalProductsCount = Object.keys(results.products).length
       results.totalProductsCount = { totalProductsCount }
-    } 
+    }
+
+    if (search) query.name = { $regex: search, $options: "i" }
 
     let startIndex = (page - 1) * limit
     if (!results.totalProductsCount) { results.totalProductsCount = {totalProductsCount: await model.countDocuments()} }
 
     try {
-      results.products = await model.find(query).limit(limit).skip(startIndex).exec()
+      results.products = await model.find(query).sort(sortBy).limit(limit).skip(startIndex).exec()
       res.paginatedResult = results
       next()
     } catch (e) {
