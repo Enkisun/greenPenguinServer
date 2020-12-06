@@ -22,7 +22,7 @@ const upload = multer({ storage })
 
 const paginatedResult = model => {
   return async (req, res, next) => {
-    let { page, limit, category, subCategory, trademark, sortBy, sortingOrder, search } = req.query
+    let { page, limit, category, subcategory, trademark, sortBy, sortingOrder, search } = req.query
     page = parseInt(page)
     limit = parseInt(limit)
 
@@ -35,7 +35,7 @@ const paginatedResult = model => {
 
     if (category || trademark) {
       if (category) { query.category = category }
-      if (subCategory) query.subCategory = subCategory
+      if (subcategory) query.subcategory = subcategory
 
       const trademarkArray = trademark.split(',')
       if (trademark) query.trademark = { $in: trademarkArray }
@@ -61,15 +61,16 @@ const paginatedResult = model => {
 }
 
 router.get('/', paginatedResult(Product), async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*')
   return res.json(res.paginatedResult)
 })
 
 router.post('/', upload.single('image'), async (req, res) => {
-  const { category, subCategory, trademark, name, volume, price, description } = req.body
+  const { category, subcategory, trademark, name, volume, price, description } = req.body
 
   const newProduct = new Product({ category, trademark, name, volume, price, description });
 
-  if (subCategory) { newProduct.subCategory = subCategory }
+  if (subcategory) { newProduct.subcategory = subcategory }
 
   if (req.file) {
     newProduct.image.data = fs.readFileSync(req.file.path)
@@ -87,12 +88,12 @@ router.post('/', upload.single('image'), async (req, res) => {
 })
 
 router.put('/', upload.single('image'), async (req, res) => {
-  const { category, subCategory, trademark, name, volume, price, description, id } = req.body;
+  const { category, subcategory, trademark, name, volume, price, description, id } = req.body;
   let image = req.file;
 
   let update = { category, trademark, name, volume, price, description }
 
-  if (subCategory) { update.subCategory = subCategory }
+  if (subcategory) { update.subcategory = subcategory }
 
   if (image) {
     image.data = fs.readFileSync(req.file.path)

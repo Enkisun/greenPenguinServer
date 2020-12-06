@@ -4,6 +4,8 @@ const Category = require('../models/Category.js');
 const router = Router()
 
 router.get('/', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*')
+
   Category.find({}, (error, categories) => {
     if (error) {
       res.status(400).json({ message: e.message })
@@ -14,10 +16,10 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  let { category, subCategory } = req.body
+  let { category, subcategory } = req.body
   let update = {}
 
-  if (subCategory) { update = { subCategory } }
+  if (subcategory) { update = { subcategory: subcategory } }
 
   Category.findOneAndUpdate({category}, {$addToSet: update}, async (error, categories) => {
     if (error) {
@@ -25,7 +27,7 @@ router.post('/', async (req, res) => {
     }
 
     if (!categories) {
-      await Category.create({category, subCategory}, response => {
+      await Category.create({category, subcategory: subcategory}, response => {
         res.json({ response })
       })
     } else {

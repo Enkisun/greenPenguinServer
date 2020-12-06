@@ -4,6 +4,8 @@ const Trademark = require('../models/Trademark.js');
 const router = Router()
 
 router.get('/', async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*')
+  
   Trademark.find({}, (error, trademarks) => {
     if (error) {
       res.status(400).json({ message: e.message })
