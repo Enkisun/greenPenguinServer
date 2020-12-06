@@ -33,19 +33,19 @@ const paginatedResult = model => {
     const query = {}
     const results = {}
 
-    if (category || trademark) {
+    if (category || trademark  || search) {
       if (category) { query.category = category }
       if (subcategory) query.subcategory = subcategory
 
       const trademarkArray = trademark.split(',')
       if (trademark) query.trademark = { $in: trademarkArray }
 
+      if (search) query.name = { $regex: search, $options: "i" }
+
       results.products = await model.find(query).exec()
       let totalProductsCount = Object.keys(results.products).length
       results.totalProductsCount = { totalProductsCount }
     }
-
-    if (search) query.name = { $regex: search, $options: "i" }
 
     let startIndex = (page - 1) * limit
     if (!results.totalProductsCount) { results.totalProductsCount = {totalProductsCount: await model.countDocuments()} }
