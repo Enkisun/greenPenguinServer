@@ -34,7 +34,7 @@ const paginatedResult = model => {
     const results = {}
 
     if (category || trademark  || search) {
-      if (category) { query.category = category }
+      if (category) query.category = category
       if (subcategory) query.subcategory = subcategory
 
       const trademarkArray = trademark.split(',')
@@ -66,9 +66,9 @@ router.get('/', paginatedResult(Product), async (req, res) => {
 })
 
 router.post('/', upload.single('image'), async (req, res) => {
-  const { category, subcategory, trademark, name, volume, price, description } = req.body
+  const { category, subcategory, trademark, name, volume, weight, price, description } = req.body
 
-  const newProduct = new Product({ category, trademark, name, volume, price, description });
+  const newProduct = new Product({ category, trademark, name, volume, weight, price, description });
 
   if (subcategory) { newProduct.subcategory = subcategory }
 
@@ -88,10 +88,10 @@ router.post('/', upload.single('image'), async (req, res) => {
 })
 
 router.put('/', upload.single('image'), async (req, res) => {
-  const { category, subcategory, trademark, name, volume, price, description, id } = req.body;
+  const { category, subcategory, trademark, name, volume, weight, price, description, id } = req.body;
   let image = req.file;
 
-  let update = { category, trademark, name, volume, price, description }
+  let update = { category, trademark, name, volume, weight, price, description }
 
   if (subcategory) { update.subcategory = subcategory }
 
