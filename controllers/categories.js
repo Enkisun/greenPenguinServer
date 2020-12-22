@@ -17,15 +17,9 @@ module.exports = {
   
     if (subcategory) update = { subcategory }
   
-    Category.findOneAndUpdate({category}, {$addToSet: update}, async (error, categories) => {
+    Category.findOneAndUpdate({category}, {$addToSet: update}, {upsert: true}, async (error, categories) => {
       if (error) {
         res.status(400).json({ message: error.message })
-      }
-  
-      if (!categories) {
-        await Category.create({category, subcategory}, response => {
-          res.json({ response })
-        })
       } else {
         res.json({ categories })
       }
