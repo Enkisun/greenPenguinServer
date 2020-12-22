@@ -5,11 +5,13 @@ const schema = new Schema({
   subcategory: { type: String },
   trademark: { type: String, required: true },
   name: { type: String, required: true },
-  volume: { type: Number },
+  size: { type: Number },
+  unit: { type: String },
   weight: { type: Number },
+  volume: { type: Number },
   price: { type: Number, required: true },
   description: { type: String },
-  image: { data: Buffer, name: String, contentType: String },
+  image: { type: String },
 });
 
 module.exports = model('Product', schema)

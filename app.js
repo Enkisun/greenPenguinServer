@@ -1,27 +1,39 @@
 const express = require('express')
-const config = require('config')
 const mongoose = require('mongoose')
+const cfg = require('./config')
+const upload = require('./upload')
+const categoriesController = require('./controllers/categories')
+const trademarksController = require('./controllers/trademarks')
+const productsController = require('./controllers/products')
 
 const app = express()
 
-const PORT = config.get('port') || 5000
-
-app.use(express.json({ extended: true }))
 mongoose.set('useFindAndModify', false);
 
-app.use('/api/auth', require('./routes/auth.routes'))
-app.use('/api/products', require('./routes/products.routes'))
-app.use('/api/categories', require('./routes/categories.routes'))
-app.use('/api/trademarks', require('./routes/trademarks.routes'))
+app.use('/uploads', express.static('uploads'))
+
+app.route('/categories')
+ .get(categoriesController.getCategories)
+ .post(categoriesController.addCategory)
+
+app.route('/trademarks')
+ .get(trademarksController.getTrademarks)
+ .post(trademarksController.addTrademark)
+
+app.route('/products')
+ .get(productsController.getProducts)
+ .post(upload.single("image"), productsController.addProduct)
+ .put(upload.single("image"), productsController.changeProduct)
+ .delete(productsController.deleteProduct)
 
 async function start() {
   try {
-    await mongoose.connect(config.get('mongoUri'), {
+    await mongoose.connect(cfg.mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true
     })
-    app.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
+    app.listen(cfg.port, () => console.log(`App has been started on port ${cfg.port}...`))
   } catch (e) {
     console.log(`Server error: ${e.message}`)
     process.exit(1)
