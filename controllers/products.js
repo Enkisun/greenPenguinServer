@@ -18,8 +18,10 @@ module.exports = {
       if (category) query.category = category
       if (subcategory) query.subcategory = subcategory
 
-      const trademarkArray = trademark.split(',')
-      if (trademark) query.trademark = { $in: trademarkArray }
+      if (trademark) {
+        const trademarkArray = trademark.split(',');
+        query.trademark = { $in: trademarkArray }
+      }
 
       if (search) query.name = { $regex: search, $options: "i" }
 
