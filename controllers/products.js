@@ -40,6 +40,7 @@ module.exports = {
       res.status(500).json({ message: e.message })
     }
   },
+
   addProduct: (req, res) => {
     const { category, subcategory, trademark, name, size, unit, price, description } = req.body
   
@@ -57,6 +58,7 @@ module.exports = {
       }
     }) 
   },
+
   changeProduct: (req, res) => {
     const { category, subcategory, trademark, name, size, unit, price, description, id } = req.body;
   
@@ -74,6 +76,7 @@ module.exports = {
       }
     })
   },
+
   deleteProduct: (req, res) => {
     const { id } = req.query;
 

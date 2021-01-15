@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const cfg = require('./config')
 const upload = require('./upload')
 const categoriesController = require('./controllers/categories')
-const trademarksController = require('./controllers/trademarks')
 const productsController = require('./controllers/products')
 
 const app = express()
@@ -15,10 +14,6 @@ app.use('/uploads', express.static('uploads'))
 app.route('/categories')
  .get(categoriesController.getCategories)
  .post(categoriesController.addCategory)
-
-app.route('/trademarks')
- .get(trademarksController.getTrademarks)
- .post(trademarksController.addTrademark)
 
 app.route('/products')
  .get(productsController.getProducts)
