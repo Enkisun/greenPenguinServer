@@ -4,6 +4,7 @@ const cfg = require('./config')
 const upload = require('./upload')
 const categoriesController = require('./controllers/categories')
 const productsController = require('./controllers/products')
+const UnitsController = require('./controllers/units')
 
 const app = express()
 
@@ -20,6 +21,10 @@ app.route('/products')
  .post(upload.single("image"), productsController.addProduct)
  .put(upload.single("image"), productsController.changeProduct)
  .delete(productsController.deleteProduct)
+
+ app.route('/units')
+ .get(UnitsController.getUnits)
+ .post(UnitsController.addUnit)
 
 async function start() {
   try {

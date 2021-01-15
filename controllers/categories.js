@@ -14,8 +14,6 @@ module.exports = {
   },
   addCategory: async (req, res) => {
     const { category, subcategory, trademark } = req.query
-    
-    let newSubcategory = {}
 
     const newTrademark = await Trademark.findOneAndUpdate({ name: trademark }, {}, { upsert: true }, error => {
       if (error) {
@@ -24,6 +22,8 @@ module.exports = {
     })
 
     let update = { trademarks: newTrademark._id }
+
+    let newSubcategory = {}
     
     if (subcategory) {
       newSubcategory = await Subcategory.findOneAndUpdate({ name: subcategory }, {}, { upsert: true }, error => {

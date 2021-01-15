@@ -41,7 +41,7 @@ module.exports = {
     }
   },
 
-  addProduct: (req, res) => {
+  addProduct: async (req, res) => {
     const { category, subcategory, trademark, name, size, unit, price, description } = req.body
   
     const newProduct = new Product({ category, subcategory, trademark, name, size, unit, price, description });
