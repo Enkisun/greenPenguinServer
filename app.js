@@ -5,6 +5,7 @@ const upload = require('./upload')
 const categoriesController = require('./controllers/categories')
 const productsController = require('./controllers/products')
 const UnitsController = require('./controllers/units')
+const TrademarksController = require('./controllers/trademarks')
 
 const app = express()
 
@@ -25,6 +26,10 @@ app.route('/products')
  app.route('/units')
  .get(UnitsController.getUnits)
  .post(UnitsController.addUnit)
+
+ app.route('/trademarks')
+ .get(TrademarksController.getTrademarks)
+ .post(TrademarksController.addTrademark)
 
 async function start() {
   try {

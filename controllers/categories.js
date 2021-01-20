@@ -20,7 +20,7 @@ module.exports = {
         res.status(400).json({ message: error.message })
       }
     })
-    console.log("newTrademark", newTrademark)
+
     let update = { trademarks: newTrademark._id }
 
     let newSubcategory = {}
@@ -32,7 +32,7 @@ module.exports = {
         }
       })
     }
-    console.log("newSubcategory", newSubcategory)
+
     if (newSubcategory._id) {
       update.subcategories = newSubcategory._id
     }

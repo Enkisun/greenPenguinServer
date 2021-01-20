@@ -7,23 +7,38 @@ module.exports = {
     page = parseInt(page)
     limit = parseInt(limit)
 
-    if (sortBy === 'По цене') sortBy = { price: sortingOrder === 'asc' ? 1 : -1 }
-    if (sortBy === 'По алфавиту') sortBy = { name: sortingOrder === 'asc' ? 'asc' : 'desc' }
-    if (!sortBy) sortBy = ''
+    if (sortBy === 'По цене') {
+      sortBy = { price: sortingOrder === 'asc' ? 1 : -1 }
+    }
+
+    if (sortBy === 'По алфавиту') {
+      sortBy = { name: sortingOrder === 'asc' ? 'asc' : 'desc' }
+    }
+
+    if (!sortBy) {
+      sortBy = ''
+    }
 
     const query = {}
     const results = {}
 
     if (category || trademark  || search) {
-      if (category) query.category = category
-      if (subcategory) query.subcategory = subcategory
+      if (category) {
+        query.category = category
+      }
+
+      if (subcategory) {
+        query.subcategory = subcategory
+      }
 
       if (trademark) {
         const trademarkArray = trademark.split(',');
         query.trademark = { $in: trademarkArray }
       }
 
-      if (search) query.name = { $regex: search, $options: "i" }
+      if (search) {
+        query.name = { $regex: search, $options: "i" }
+      }
 
       results.products = await Product.find(query).exec()
       let totalProductsCount = Object.keys(results.products).length
@@ -31,7 +46,10 @@ module.exports = {
     }
 
     let startIndex = (page - 1) * limit
-    if (!results.totalProductsCount) { results.totalProductsCount = {totalProductsCount: await Product.countDocuments()} }
+    
+    if (!results.totalProductsCount) {
+      results.totalProductsCount = {totalProductsCount: await Product.countDocuments()}
+    }
 
     try {
       results.products = await Product.find(query).sort(sortBy).limit(limit).skip(startIndex).exec()
