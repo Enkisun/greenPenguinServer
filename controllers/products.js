@@ -7,11 +7,11 @@ module.exports = {
     page = parseInt(page)
     limit = parseInt(limit)
 
-    if (sortBy === 'По цене') {
+    if (sortBy === 'price') {
       sortBy = { price: sortingOrder === 'asc' ? 1 : -1 }
     }
 
-    if (sortBy === 'По алфавиту') {
+    if (sortBy === 'alphabet') {
       sortBy = { name: sortingOrder === 'asc' ? 'asc' : 'desc' }
     }
 
@@ -41,14 +41,13 @@ module.exports = {
       }
 
       results.products = await Product.find(query).exec()
-      let totalProductsCount = Object.keys(results.products).length
-      results.totalProductsCount = { totalProductsCount }
+      results.totalProductsCount = Object.keys(results.products).length
     }
 
     let startIndex = (page - 1) * limit
     
     if (!results.totalProductsCount) {
-      results.totalProductsCount = {totalProductsCount: await Product.countDocuments()}
+      results.totalProductsCount = await Product.countDocuments()
     }
 
     try {
@@ -65,7 +64,7 @@ module.exports = {
     const newProduct = new Product({ category, subcategory, trademark, name, size, unit, price, description });
   
     if (req.file) {
-      newProduct.image = `//localhost:5000/${req.file.path}`
+      newProduct.image = `${req.file.path}`
     }
   
     newProduct.save((error, response) => {
@@ -83,7 +82,7 @@ module.exports = {
     let update = { category, subcategory, trademark, name, size, unit, price, description }
 
     if (req.file) {
-      update.image = `//localhost:5000/${req.file.path}`
+      update.image = `${req.file.path}`
     }
   
     Product.findOneAndUpdate({ _id: id }, { $set: update }, error => {

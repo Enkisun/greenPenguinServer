@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const cfg = require('./config')
 const upload = require('./upload')
 const categoriesController = require('./controllers/categories')
@@ -12,6 +13,8 @@ const app = express()
 mongoose.set('useFindAndModify', false);
 
 app.use('/uploads', express.static('uploads'))
+
+app.use(cors())
 
 app.route('/categories')
  .get(categoriesController.getCategories)
