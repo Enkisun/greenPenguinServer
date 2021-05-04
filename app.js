@@ -1,51 +1,49 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors')
-const cfg = require('./config')
-const upload = require('./upload')
-const categoriesController = require('./controllers/categories')
-const productsController = require('./controllers/products')
-const UnitsController = require('./controllers/units')
-const TrademarksController = require('./controllers/trademarks')
+const express = require("express");
+const cors = require("cors");
+const { check } = require("express-validator");
+const mongoose = require("mongoose");
+const cfg = require("./config");
+const loginController = require("./controllers/login");
+const registerController = require("./controllers/register");
+const categoriesController = require("./controllers/categories");
 
-const app = express()
+const app = express();
 
-mongoose.set('useFindAndModify', false);
+mongoose.set("useFindAndModify", false);
 
-app.use('/uploads', express.static('uploads'))
+app.use(cors());
 
-app.use(cors())
+app
+  .route("/register")
+  .post(registerController.register, [
+    check("email", "Некорректный email").isEmail(),
+  ]);
 
-app.route('/categories')
- .get(categoriesController.getCategories)
- .post(categoriesController.addCategory)
+app
+  .route("/login")
+  .post(loginController.login, [
+    check("email", "Введите корректный email").normalizeEmail().isEmail(),
+  ]);
 
-app.route('/products')
- .get(productsController.getProducts)
- .post(upload.single("image"), productsController.addProduct)
- .put(upload.single("image"), productsController.changeProduct)
- .delete(productsController.deleteProduct)
-
- app.route('/units')
- .get(UnitsController.getUnits)
- .post(UnitsController.addUnit)
-
- app.route('/trademarks')
- .get(TrademarksController.getTrademarks)
- .post(TrademarksController.addTrademark)
+app
+  .route("/categories")
+  .get(categoriesController.getCategories)
+  .post(categoriesController.addCategory);
 
 async function start() {
   try {
     await mongoose.connect(cfg.mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useCreateIndex: true
-    })
-    app.listen(cfg.port, () => console.log(`App has been started on port ${cfg.port}...`))
+      useCreateIndex: true,
+    });
+    app.listen(cfg.port, () =>
+      console.log(`App has been started on port ${cfg.port}...`)
+    );
   } catch (e) {
-    console.log(`Server error: ${e.message}`)
-    process.exit(1)
+    console.log(`Server error: ${e.message}`);
+    process.exit(1);
   }
 }
 
-start()
+start();
